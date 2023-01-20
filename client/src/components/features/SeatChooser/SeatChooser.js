@@ -1,28 +1,42 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Progress, Alert } from 'reactstrap';
-import { getSeats, loadSeatsRequest, getRequests } from '../../../redux/seatsRedux';
+import { getSeats, loadSeats, loadSeatsRequest, getRequests } from '../../../redux/seatsRedux';
+import io from 'socket.io-client';
 import './SeatChooser.scss';
 
 const SeatChooser = ({ chosenDay, chosenSeat, updateSeat }) => {
   const dispatch = useDispatch();
   const seats = useSelector(getSeats);
   const requests = useSelector(getRequests);
-  const [loadInterval, setLoadInterval] = useState(null);
+  // const [loadInterval, setLoadInterval] = useState(null);
+  const [socket, setSocket] = useState(null);
+
 
   useEffect(() => {
+    if (socket) {
+      socket.on(`seatsUpdated`, (seats) => dispatch(loadSeats(seats)));
+    }
+
+    // socket.on(`seatsUpdated`, (seats) => dispatch(loadSeats(seats)));
+    // console.log(socket)
     dispatch(loadSeatsRequest());
 
-    setLoadInterval(setInterval(async () => {
-      dispatch(loadSeatsRequest());
-    }, 120000))
+    // setLoadInterval(setInterval(async () => {
+    //   dispatch(loadSeatsRequest());
+    // }, 120000))
 
-    return (() => {
-      if (loadInterval)
-        clearInterval(loadInterval);
-    })
-  }, [dispatch])
+    // return (() => {
+    //   if (loadInterval)
+    //     clearInterval(loadInterval);
+    // })
+  }, [dispatch, socket])
 
+
+  useEffect(() => {
+    const socket = io(`localhost:8000`);
+    setSocket(socket)
+  }, [])
 
   const isTaken = (seatId) => {
     return (seats.some(item => (item.seat === seatId && item.day === chosenDay)));

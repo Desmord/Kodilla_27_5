@@ -3,7 +3,12 @@ const router = express.Router();
 const DB = require('../db');
 const { v4: uuidv4 } = require('uuid');
 
-// tutaj
+
+const seatsUpdated = (io, seats) => {
+    io.local.emit('seatsUpdated',seats);
+}
+
+
 router.get('/seats', (req, res) => {
     res.json(DB.seats);
 });
@@ -17,6 +22,7 @@ router.get('/seats/:id', (req, res) => {
         res.json({ message: `ERROR` });
     }
 });
+
 
 router.post('/seats', (req, res) => {
 
@@ -41,6 +47,7 @@ router.post('/seats', (req, res) => {
         })
 
         res.json({ message: `OK` });
+        seatsUpdated(req.io, DB.seats)
     }
 
 });
