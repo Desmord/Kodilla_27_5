@@ -5,6 +5,9 @@ const socket = require('socket.io');
 const mongoose = require('mongoose');
 
 const PORT = 8000;
+const USER_NAME = `user1`;
+const PASSWORD = `user1P`;
+const DATA_BASE_NAME = `NewWaveDb`;
 
 const testimonialsRoutes = require('./routes/testimonials.routes');
 const concertsRoutes = require('./routes/concerts.routes');
@@ -39,7 +42,7 @@ app.use((req, res) => {
 
 
 
-mongoose.connect('mongodb://localhost:27017/companyDB', { useNewUrlParser: true });
+mongoose.connect(`mongodb+srv://${USER_NAME}:${PASSWORD}@cluster0.pv477hr.mongodb.net/${DATA_BASE_NAME}?retryWrites=true&w=majority`, { useNewUrlParser: true });
 const db = mongoose.connection;
 
 db.once('open', () => {
@@ -59,3 +62,4 @@ io.on('connection', (socket) => {
   console.log('New client! Its id – ' + socket.id);
 
 });
+
