@@ -87,3 +87,101 @@ exports.deleteById = async (req, res) => {
     }
 
 }
+
+
+// Kodilla 30.5
+
+// Sprawdzanie czy puste jeśli nie podano argumentu???
+exports.getConcertsByPerformer = async (req, res) => {
+
+    try {
+
+        const performer = req.params.performer;
+        let concerts = await Concert.find()
+
+        concerts = concerts.filter(concert => concert.performer.toLowerCase() === performer.toLowerCase() ? true : false);
+
+        if (!concerts.length) {
+            res.status(500).json({ message: `Not found` })
+        } else {
+            res.json(concerts);
+        }
+
+    }
+    catch (err) {
+        res.status(500).json({ message: `Error` });
+    }
+
+}
+
+exports.getConcertsByGenre = async (req, res) => {
+
+    try {
+
+        const genre = req.params.genre;
+        let concerts = await Concert.find()
+
+        concerts = concerts.filter(concert => concert.genre.toLowerCase() === genre.toLowerCase() ? true : false);
+
+        if (!concerts.length) {
+            res.status(500).json({ message: `Not found` })
+        } else {
+            res.json(concerts);
+        }
+
+    }
+    catch (err) {
+        res.status(500).json({ message: `Error` });
+    }
+
+}
+
+exports.getConcertsByMinAndMaxPrice = async (req, res) => {
+
+    try {
+
+        const min = req.params.price_min;
+        const max = req.params.price_max;
+        let concerts = await Concert.find()
+
+        concerts = concerts.filter(concert => concert.price <= max ? true : false);
+        concerts = concerts.filter(concert => concert.price >= min ? true : false);
+
+        if (!concerts.length) {
+            res.status(500).json({ message: `Not found` })
+        } else {
+            res.json(concerts);
+        }
+
+    }
+    catch (err) {
+        res.status(500).json({ message: `Error` });
+    }
+
+}
+
+exports.getConcertsByDay = async (req, res) => {
+
+    try {
+
+        const day = req.params.day;
+        let concerts = await Concert.find()
+        // console.log(`ehej`)
+        // console.log(day)
+        // console.log(concerts)
+        concerts = concerts.filter(concert => concert.day === parseInt(day) ? true : false);
+
+        
+
+        if (!concerts.length) {
+            res.status(500).json({ message: `Not found` })
+        } else {
+            res.json(concerts);
+        }
+
+    }
+    catch (err) {
+        res.status(500).json({ message: `Error` });
+    }
+
+}

@@ -41,7 +41,6 @@ app.use((req, res) => {
 })
 
 
-
 mongoose.connect(`mongodb+srv://${USER_NAME}:${PASSWORD}@cluster0.pv477hr.mongodb.net/${DATA_BASE_NAME}?retryWrites=true&w=majority`, { useNewUrlParser: true });
 const db = mongoose.connection;
 
@@ -63,3 +62,6 @@ io.on('connection', (socket) => {
 
 });
 
+// "test": "mocha --watch \"./{,!(node_modules|client)/**/}*.test.js\""
+
+module.exports = server;
