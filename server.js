@@ -3,10 +3,10 @@ const cors = require('cors')
 const path = require('path');
 const socket = require('socket.io');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 
 const PORT = 8000;
 const USER_NAME = `user1`;
-const PASSWORD = `user1P`;
 const DATA_BASE_NAME = `NewWaveDb`;
 
 const testimonialsRoutes = require('./routes/testimonials.routes');
@@ -15,6 +15,7 @@ const seatsRoutes = require('./routes/seats.routes');
 
 const app = express();
 
+app.use(helmet());
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -41,7 +42,7 @@ app.use((req, res) => {
 })
 
 
-mongoose.connect(`mongodb+srv://${USER_NAME}:${PASSWORD}@cluster0.pv477hr.mongodb.net/${DATA_BASE_NAME}?retryWrites=true&w=majority`, { useNewUrlParser: true });
+mongoose.connect(`mongodb+srv://${USER_NAME}:${process.env.DB_PASS}@cluster0.pv477hr.mongodb.net/${DATA_BASE_NAME}?retryWrites=true&w=majority`, { useNewUrlParser: true });
 const db = mongoose.connection;
 
 db.once('open', () => {
@@ -61,7 +62,5 @@ io.on('connection', (socket) => {
   console.log('New client! Its id – ' + socket.id);
 
 });
-
-// "test": "mocha --watch \"./{,!(node_modules|client)/**/}*.test.js\""
 
 module.exports = server;

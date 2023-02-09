@@ -1,4 +1,5 @@
 const Seat = require('../models/seats.model');
+const sanitize = require('mongo-sanitize');
 
 
 const seatsUpdated = (io, seats) => {
@@ -19,7 +20,7 @@ exports.getAll = async (req, res) => {
 exports.getById = async (req, res) => {
 
     try {
-        const dep = await Seat.findById(req.params.id);
+        const dep = await Seat.findById(sanitize(req.params.id));
         if (!dep) res.status(404).json({ message: 'Not found' });
         else res.json(dep);
     }
@@ -50,11 +51,11 @@ exports.postAll = async (req, res) => {
             try {
 
                 const newSeat = new Seat({
-                    id: req.body.id,
-                    day: req.body.day,
-                    seat: req.body.seat,
-                    client: req.body.client,
-                    email: req.body.email
+                    id: sanitize(req.body.id),
+                    day: sanitize(req.body.day),
+                    seat: sanitize(req.body.seat),
+                    client: sanitize(req.body.client),
+                    email: sanitize(req.body.email)
                 });
                 await newSeat.save();
                 res.json({ message: 'OK' });
@@ -76,17 +77,17 @@ exports.postAll = async (req, res) => {
 exports.putById = async (req, res) => {
 
     try {
-        await Seat.updateOne({ _id: req.params.id }, {
+        await Seat.updateOne({ _id: sanitize(req.params.id) }, {
             $set: {
-                id: req.body.id,
-                day: req.body.day,
-                seat: req.body.seat,
-                client: req.body.client,
-                email: req.body.email
+                id: sanitize(req.body.id),
+                day: sanitize(req.body.day),
+                seat: sanitize(req.body.seat),
+                client: sanitize(req.body.client),
+                email: sanitize(req.body.email)
             }
         });
 
-        const dep = await Seat.findById(req.params.id);
+        const dep = await Seat.findById(sanitize(req.params.id));
         if (!dep) res.status(404).json({ message: 'Not found' });
         else res.json(dep);
     }
@@ -99,11 +100,11 @@ exports.putById = async (req, res) => {
 exports.deleteById = async (req, res) => {
 
     try {
-        const dep = await Seat.findById(req.params.id);
+        const dep = await Seat.findById(sanitize(req.params.id));
         if (dep) {
-            await Seat.deleteOne({ _id: req.params.id });
+            await Seat.deleteOne({ _id: sanitize(req.params.id) });
 
-            const dep = await Seat.findById(req.params.id);
+            const dep = await Seat.findById(sanitize(req.params.id));
             if (!dep) res.status(404).json({ message: 'Not found' });
             else res.json(dep);
 

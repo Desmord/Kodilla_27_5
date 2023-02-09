@@ -1,4 +1,6 @@
 const Concert = require('../models/concerts.model');
+const sanitize = require('mongo-sanitize');
+
 
 exports.getAll = async (req, res) => {
 
@@ -15,7 +17,7 @@ exports.getAll = async (req, res) => {
 exports.getById = async (req, res) => {
 
     try {
-        const dep = await Concert.findById(req.params.id);
+        const dep = await Concert.findById(sanitize(req.params.id));
         if (!dep) res.status(404).json({ message: 'Not found' });
         else res.json(dep);
     }
@@ -30,11 +32,11 @@ exports.postAll = async (req, res) => {
     try {
 
         const newConcert = new Concert({
-            performer: req.body.performer,
-            genre: req.body.genre,
-            price: req.body.price,
-            day: req.body.day,
-            image: req.body.image,
+            performer: sanitize(req.body.performer),
+            genre: sanitize(req.body.genre),
+            price: sanitize(req.body.price),
+            day: sanitize(req.body.day),
+            image: sanitize(req.body.image),
         });
         await newConcert.save();
         res.json({ message: 'OK' });
@@ -48,17 +50,17 @@ exports.postAll = async (req, res) => {
 exports.putById = async (req, res) => {
 
     try {
-        await Concert.updateOne({ _id: req.params.id }, {
+        await Concert.updateOne({ _id: sanitize(req.params.id) }, {
             $set: {
-                performer: req.body.performer,
-                genre: req.body.genre,
-                price: req.body.price,
-                day: req.body.day,
-                image: req.body.image,
+                performer: sanitize(req.body.performer),
+                genre: sanitize(req.body.genre),
+                price: sanitize(req.body.price),
+                day: sanitize(req.body.day),
+                image: sanitize(req.body.image),
             }
         });
 
-        const dep = await Concert.findById(req.params.id);
+        const dep = await Concert.findById(sanitize(req.params.id));
         if (!dep) res.status(404).json({ message: 'Not found' });
         else res.json(dep);
     }
@@ -71,11 +73,11 @@ exports.putById = async (req, res) => {
 exports.deleteById = async (req, res) => {
 
     try {
-        const dep = await Concert.findById(req.params.id);
+        const dep = await Concert.findById(sanitize(req.params.id));
         if (dep) {
-            await Concert.deleteOne({ _id: req.params.id });
+            await Concert.deleteOne({ _id: sanitize(req.params.id) });
 
-            const dep = await Concert.findById(req.params.id);
+            const dep = await Concert.findById(sanitize(req.params.id));
             if (!dep) res.status(404).json({ message: 'Not found' });
             else res.json(dep);
 
@@ -88,15 +90,11 @@ exports.deleteById = async (req, res) => {
 
 }
 
-
-// Kodilla 30.5
-
-// Sprawdzanie czy puste jeśli nie podano argumentu???
 exports.getConcertsByPerformer = async (req, res) => {
 
     try {
 
-        const performer = req.params.performer;
+        const performer = sanitize(req.params.performer);
         let concerts = await Concert.find()
 
         concerts = concerts.filter(concert => concert.performer.toLowerCase() === performer.toLowerCase() ? true : false);
@@ -118,7 +116,7 @@ exports.getConcertsByGenre = async (req, res) => {
 
     try {
 
-        const genre = req.params.genre;
+        const genre = sanitize(req.params.genre);
         let concerts = await Concert.find()
 
         concerts = concerts.filter(concert => concert.genre.toLowerCase() === genre.toLowerCase() ? true : false);
@@ -140,8 +138,8 @@ exports.getConcertsByMinAndMaxPrice = async (req, res) => {
 
     try {
 
-        const min = req.params.price_min;
-        const max = req.params.price_max;
+        const min = sanitize(req.params.price_min);
+        const max = sanitize(req.params.price_max);
         let concerts = await Concert.find()
 
         concerts = concerts.filter(concert => concert.price <= max ? true : false);
@@ -164,14 +162,11 @@ exports.getConcertsByDay = async (req, res) => {
 
     try {
 
-        const day = req.params.day;
+        const day = sanitize(req.params.day);
         let concerts = await Concert.find()
-        // console.log(`ehej`)
-        // console.log(day)
-        // console.log(concerts)
         concerts = concerts.filter(concert => concert.day === parseInt(day) ? true : false);
 
-        
+
 
         if (!concerts.length) {
             res.status(500).json({ message: `Not found` })

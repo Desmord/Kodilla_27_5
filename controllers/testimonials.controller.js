@@ -1,4 +1,5 @@
 const Testimonial = require('../models/testimonials.model');
+const sanitize = require('mongo-sanitize');
 
 exports.getAll = async (req, res) => {
     try {
@@ -28,9 +29,13 @@ exports.getRandom = async (req, res) => {
 exports.getById = async (req, res) => {
 
     try {
-        const dep = await Testimonial.findById(req.params.id);
-        if (!dep) res.status(404).json({ message: 'Not found' });
-        else res.json(dep);
+        const cleanId = sanitize(req.params.id)
+        const dep = await Testimonial.findById(cleanId);
+
+        if (!dep)
+            res.status(404).json({ message: 'Not found' });
+        else
+            res.json(dep);
     }
     catch (err) {
         res.status(500).json({ message: err });
@@ -42,8 +47,8 @@ exports.postAll = async (req, res) => {
     try {
 
         const newTestimonial = new Testimonial({
-            author: req.body.author,
-            text: req.body.text
+            author: sanitize(req.body.author),
+            text: sanitize(req.body.text)
         });
         await newTestimonial.save();
         res.json({ message: 'OK' });
@@ -55,14 +60,14 @@ exports.postAll = async (req, res) => {
 
 exports.putById = async (req, res) => {
     try {
-        await Testimonial.updateOne({ _id: req.params.id }, {
+        await Testimonial.updateOne({ _id: sanitize(req.params.id) }, {
             $set: {
-                author: req.body.author,
-                text: req.body.text
+                author: sanitize(req.body.author),
+                text: sanitize(req.body.text)
             }
         });
 
-        const dep = await Testimonial.findById(req.params.id);
+        const dep = await Testimonial.findById(sanitize(req.params.id));
         if (!dep) res.status(404).json({ message: 'Not found' });
         else res.json(dep);
     }
@@ -74,11 +79,11 @@ exports.putById = async (req, res) => {
 
 exports.deleteById = async (req, res) => {
     try {
-        const dep = await Testimonial.findById(req.params.id);
+        const dep = await Testimonial.findById(sanitize(req.params.id));
         if (dep) {
-            await Testimonial.deleteOne({ _id: req.params.id });
+            await Testimonial.deleteOne({ _id: sanitize(req.params.id) });
 
-            const dep = await Testimonial.findById(req.params.id);
+            const dep = await Testimonial.findById(sanitize(req.params.id));
             if (!dep) res.status(404).json({ message: 'Not found' });
             else res.json(dep);
 
